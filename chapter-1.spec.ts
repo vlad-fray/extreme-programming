@@ -70,8 +70,6 @@ describe('Test', () => {
     });
 });
 
-
-
 class Pair {
     private _from: string;
     private _to: string;

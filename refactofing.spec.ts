@@ -1,5 +1,12 @@
 import { uid } from 'uid';
 
+// Добавить 2 новых вида скидки на товары:
+// 1) Каждый n - бесплатный
+// 2) Скидки по купону (maxDiscountAmount: number, maxDiscountRate)
+
+// Добавить новый вид высчитывания стоимости доставки
+// Бесплатная доставка свыше суммы N с учётом скидки на товары и без её учёта
+
 describe('Test refactoring', () => {
     it('Final result is the same', () => {
         const productBasePrice = 300;

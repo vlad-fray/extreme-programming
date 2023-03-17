@@ -1,4 +1,4 @@
-import { AbstractProductDiscountCalculatorViaQuantity, IDiscountCalculator, ProductDiscountCalculatorViaQuantity } from "./refac.discount-calculator";
+import { IDiscountCalculator } from "./refac.discount-calculator";
 import { Product } from "./refac.product";
 import { AbstractShippingCostCalculator } from "./refac.shipping-cost";
 
@@ -24,7 +24,7 @@ abstract class AbstractOrderCalculator {
 
 class OrderCalculator extends AbstractOrderCalculator {
     constructor(
-        productDiscountCalculator: AbstractProductDiscountCalculatorViaQuantity,
+        productDiscountCalculator: IDiscountCalculator,
         shippingCostCalculator: AbstractShippingCostCalculator
     ) {
         super(productDiscountCalculator, shippingCostCalculator)

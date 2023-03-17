@@ -1,5 +1,5 @@
 interface IDiscountCalculator {
-    calculateDiscount(...args: unknown[]): number;
+    calculateDiscount(baseProductPrice: number, quantity: number): number;
 }
 
 // Via quantity

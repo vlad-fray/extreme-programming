@@ -1,4 +1,3 @@
-// Bad Code
 function priceOrder(
     product: {
         basePrice: number;

@@ -1,6 +1,6 @@
 import { priceOrder } from './refac.bad-code-example';
 
-import { ProductDiscountCalculatorViaQuantity } from './refac.discount-calculator';
+import { ProductDiscountCalculatorViaOrder, ProductDiscountCalculatorViaQuantity } from './refac.discount-calculator';
 import { ShippingCostCalculatorViaAllProductsCost } from './refac.shipping-cost';
 import { OrderCalculator } from './refac.order-calculator';
 import { Product } from './refac.product';
@@ -61,4 +61,36 @@ describe('Test refactoring', () => {
 
         expect(priceViaBadMethod).toBe(priceViaMyMethod);
     });
+
+    it('Every n is free', () => {
+        const productBasePrice = 300;
+        const productFreeElementOrder = 3;
+        const productsQuantity = 8;
+        const shippingDiscountThreshold = 1000;
+        const shippingDiscountFeePerCase = 50;
+        const shippingFeePerCase = 70;
+
+        const productDiscountCalculator = new ProductDiscountCalculatorViaOrder(
+            productFreeElementOrder,
+        );
+
+        const shippingCostCalculator = new ShippingCostCalculatorViaAllProductsCost(
+            shippingDiscountThreshold,
+            shippingDiscountFeePerCase,
+            shippingFeePerCase
+        );
+
+        const orderCalculator = new OrderCalculator(
+            productDiscountCalculator,
+            shippingCostCalculator
+        );
+
+        const cart = new Cart(orderCalculator);
+        const product = new Product('Chair', productBasePrice);
+        cart.addProductToCart(product, productsQuantity);
+
+        const priceViaMyMethod = cart.getCartPrice();
+
+        expect(priceViaMyMethod).toBe(300 * 8 - 300 * 2 + 50 * 8);
+    })
 });

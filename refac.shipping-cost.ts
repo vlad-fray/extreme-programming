@@ -20,4 +20,22 @@ class ShippingCostCalculatorViaAllProductsCost implements IShippingCostCalculato
     }
 }
 
-export { IShippingCostCalculator, ShippingCostCalculatorViaAllProductsCost };
+class ShippingCostCalculatorFreeViaAllProductsCost implements IShippingCostCalculator {
+    private _discountThreshold: number;
+    private _feePerCase: number;
+
+    constructor(discountThreshold: number, feePerCase: number) {
+        this._discountThreshold = discountThreshold;
+        this._feePerCase = feePerCase;
+    }
+
+    calculateCost(allProductsCost: number, quantity: number): number {
+        return allProductsCost > this._discountThreshold ? 0 : this._feePerCase * quantity;
+    }
+}
+
+export {
+    IShippingCostCalculator,
+    ShippingCostCalculatorViaAllProductsCost,
+    ShippingCostCalculatorFreeViaAllProductsCost,
+};

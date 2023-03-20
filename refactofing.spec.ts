@@ -1,10 +1,15 @@
 import { priceOrder } from './refac.bad-code-example';
 
-import { ProductDiscountCalculatorViaOrder, ProductDiscountCalculatorViaQuantity } from './refac.discount-calculator';
+import {
+    ProductDiscountCalculatorDecoratedWithCoupon,
+    ProductDiscountCalculatorViaOrder,
+    ProductDiscountCalculatorViaQuantity,
+} from './refac.discount-calculator';
 import { ShippingCostCalculatorViaAllProductsCost } from './refac.shipping-cost';
 import { OrderCalculator } from './refac.order-calculator';
 import { Product } from './refac.product';
 import { Cart } from './refac.cart';
+import { Coupon, CouponDiscountCalculator } from './refac.coupon';
 
 // Добавить 2 новых вида скидки на товары:
 // 1) Каждый n - бесплатный
@@ -71,7 +76,7 @@ describe('Test refactoring', () => {
         const shippingFeePerCase = 70;
 
         const productDiscountCalculator = new ProductDiscountCalculatorViaOrder(
-            productFreeElementOrder,
+            productFreeElementOrder
         );
 
         const shippingCostCalculator = new ShippingCostCalculatorViaAllProductsCost(
@@ -92,5 +97,44 @@ describe('Test refactoring', () => {
         const priceViaMyMethod = cart.getCartPrice();
 
         expect(priceViaMyMethod).toBe(300 * 8 - 300 * 2 + 50 * 8);
-    })
+    });
+
+    it('Every n is free with coupon', () => {
+        const productBasePrice = 300;
+        const productFreeElementOrder = 3;
+        const productsQuantity = 8;
+        const shippingDiscountThreshold = 1000;
+        const shippingDiscountFeePerCase = 50;
+        const shippingFeePerCase = 70;
+
+        const productDiscountCalculator = new ProductDiscountCalculatorViaOrder(
+            productFreeElementOrder
+        );
+
+        const couponDiscountCalculator = new CouponDiscountCalculator(new Coupon(300, 0.5));
+
+        const decoratedProductDiscountCalculator = new ProductDiscountCalculatorDecoratedWithCoupon(
+            productDiscountCalculator,
+            couponDiscountCalculator
+        );
+
+        const shippingCostCalculator = new ShippingCostCalculatorViaAllProductsCost(
+            shippingDiscountThreshold,
+            shippingDiscountFeePerCase,
+            shippingFeePerCase
+        );
+
+        const orderCalculator = new OrderCalculator(
+            decoratedProductDiscountCalculator,
+            shippingCostCalculator
+        );
+
+        const cart = new Cart(orderCalculator);
+        const product = new Product('Chair', productBasePrice);
+        cart.addProductToCart(product, productsQuantity);
+
+        const priceViaMyMethod = cart.getCartPrice();
+
+        expect(priceViaMyMethod).toBe(300 * 8 - 300 * 2 - 300 + 50 * 8);
+    });
 });

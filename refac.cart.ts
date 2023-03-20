@@ -1,11 +1,11 @@
-import { AbstractOrderCalculator } from "./refac.order-calculator";
+import { IOrderCalculator } from "./refac.order-calculator";
 import { Product } from "./refac.product";
 
 class Cart {
     private _cart: { productInfo: Product; quantity: number }[] = [];
-    private _orderCalculator: AbstractOrderCalculator;
+    private _orderCalculator: IOrderCalculator;
 
-    constructor(orderCalculator: AbstractOrderCalculator) {
+    constructor(orderCalculator: IOrderCalculator) {
         this._orderCalculator = orderCalculator;
     }
 

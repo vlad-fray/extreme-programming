@@ -1,23 +1,16 @@
+import { ICouponDiscountCalculator } from "./refac.coupon";
+
 interface IDiscountCalculator {
-    calculateDiscount(baseProductPrice: number, quantity: number): number;
+    calculateDiscount(baseProductPrice: number, quantity: number, ...args: unknown[]): number;
 }
 
-// Via quantity
-abstract class AbstractProductDiscountCalculatorViaQuantity implements IDiscountCalculator {
-    protected _discountThreshold: number;
-    protected _discountRate: number;
+class ProductDiscountCalculatorViaQuantity implements IDiscountCalculator {
+    private _discountThreshold: number;
+    private _discountRate: number;
 
     constructor(discountThreshold: number, discountRate: number) {
         this._discountThreshold = discountThreshold;
         this._discountRate = discountRate;
-    }
-
-    abstract calculateDiscount(baseProductPrice: number, quantity: number): number;
-}
-
-class ProductDiscountCalculatorViaQuantity extends AbstractProductDiscountCalculatorViaQuantity {
-    constructor(discountThreshold: number, discountRate: number) {
-        super(discountThreshold, discountRate);
     }
 
     calculateDiscount(baseProductPrice: number, quantity: number): number {
@@ -27,20 +20,11 @@ class ProductDiscountCalculatorViaQuantity extends AbstractProductDiscountCalcul
     }
 }
 
-// Via order
-abstract class AbstractProductDiscountCalculatorViaOrder implements IDiscountCalculator {
-    protected _freeElementOrder: number;
+class ProductDiscountCalculatorViaOrder implements IDiscountCalculator {
+    private _freeElementOrder: number;
 
     constructor(freeElementOrder: number) {
         this._freeElementOrder = freeElementOrder;
-    }
-
-    abstract calculateDiscount(baseProductPrice: number, quantity: number): number;
-}
-
-class ProductDiscountCalculatorViaOrder extends AbstractProductDiscountCalculatorViaOrder {
-    constructor(freeElementOrder: number) {
-        super(freeElementOrder);
     }
 
     calculateDiscount(baseProductPrice: number, quantity: number) {
@@ -48,10 +32,25 @@ class ProductDiscountCalculatorViaOrder extends AbstractProductDiscountCalculato
     }
 }
 
+class ProductDiscountCalculatorDecoratedWithCoupon implements IDiscountCalculator {
+    private _discountCalculator: IDiscountCalculator;
+    private _couponDiscountCalculator: ICouponDiscountCalculator;
+
+    constructor(discountCalculator: IDiscountCalculator, couponDiscountCalculator: ICouponDiscountCalculator) {
+        this._discountCalculator = discountCalculator;
+        this._couponDiscountCalculator = couponDiscountCalculator;
+    }
+
+    calculateDiscount(baseProductPrice: number, quantity: number, ...args: unknown[]) {
+        const discount = this._discountCalculator.calculateDiscount(baseProductPrice, quantity, ...args);
+        const couponDiscount = this._couponDiscountCalculator.calculateDiscount(baseProductPrice * quantity - discount);
+        return discount + couponDiscount;
+    }
+}
+
 export {
     IDiscountCalculator,
-    AbstractProductDiscountCalculatorViaQuantity,
     ProductDiscountCalculatorViaQuantity,
-    AbstractProductDiscountCalculatorViaOrder,
     ProductDiscountCalculatorViaOrder,
+    ProductDiscountCalculatorDecoratedWithCoupon,
 };

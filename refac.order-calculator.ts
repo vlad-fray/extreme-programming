@@ -1,33 +1,26 @@
 import { IDiscountCalculator } from "./refac.discount-calculator";
 import { Product } from "./refac.product";
-import { AbstractShippingCostCalculator } from "./refac.shipping-cost";
+import { IShippingCostCalculator } from "./refac.shipping-cost";
 
 interface IPropsProductItem {
     productInfo: Product;
     quantity: number;
 }
 
-abstract class AbstractOrderCalculator {
-    protected _productDiscountCalculator: IDiscountCalculator;
-    protected _shippingCostCalculator: AbstractShippingCostCalculator;
+interface IOrderCalculator {
+    calculateOrder(products: IPropsProductItem[], ...args: unknown[]): number;
+}
+
+class OrderCalculator implements IOrderCalculator {
+    private _productDiscountCalculator: IDiscountCalculator;
+    private _shippingCostCalculator: IShippingCostCalculator;
 
     constructor(
         productDiscountCalculator: IDiscountCalculator,
-        shippingCostCalculator: AbstractShippingCostCalculator,
+        shippingCostCalculator: IShippingCostCalculator,
     ) {
         this._productDiscountCalculator = productDiscountCalculator;
         this._shippingCostCalculator = shippingCostCalculator;
-    }
-
-    abstract calculateOrder(products: IPropsProductItem[]): number;
-}
-
-class OrderCalculator extends AbstractOrderCalculator {
-    constructor(
-        productDiscountCalculator: IDiscountCalculator,
-        shippingCostCalculator: AbstractShippingCostCalculator
-    ) {
-        super(productDiscountCalculator, shippingCostCalculator)
     }
 
     calculateOrder(products: IPropsProductItem[]) {
@@ -49,4 +42,4 @@ class OrderCalculator extends AbstractOrderCalculator {
     }
 }
 
-export { AbstractOrderCalculator, OrderCalculator }
+export { IOrderCalculator, OrderCalculator }

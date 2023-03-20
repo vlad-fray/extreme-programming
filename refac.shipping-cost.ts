@@ -1,20 +1,16 @@
-abstract class AbstractShippingCostCalculator {
-    protected _discountThreshold: number;
-    protected _discountFeePerCase: number;
-    protected _feePerCase: number;
+interface IShippingCostCalculator {
+    calculateCost(allProductsCost: number, quantity: number, ...args: unknown[]): number;
+}
+
+class ShippingCostCalculatorViaAllProductsCost implements IShippingCostCalculator {
+    private _discountThreshold: number;
+    private _discountFeePerCase: number;
+    private _feePerCase: number;
 
     constructor(discountThreshold: number, discountFeePerCase: number, feePerCase: number) {
         this._discountThreshold = discountThreshold;
         this._discountFeePerCase = discountFeePerCase;
         this._feePerCase = feePerCase;
-    }
-
-    abstract calculateCost(allProductsCost: number, quantity: number): number;
-}
-
-class ShippingCostCalculatorViaAllProductsCost extends AbstractShippingCostCalculator {
-    constructor(discountThreshold: number, discountFeePerCase: number, feePerCase: number) {
-        super(discountThreshold, discountFeePerCase, feePerCase);
     }
 
     calculateCost(allProductsCost: number, quantity: number): number {
@@ -24,4 +20,4 @@ class ShippingCostCalculatorViaAllProductsCost extends AbstractShippingCostCalcu
     }
 }
 
-export { AbstractShippingCostCalculator, ShippingCostCalculatorViaAllProductsCost };
+export { IShippingCostCalculator, ShippingCostCalculatorViaAllProductsCost };
